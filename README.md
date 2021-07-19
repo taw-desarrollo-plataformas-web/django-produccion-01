@@ -1,11 +1,11 @@
-# Django en produccion a través de gunicorn y nginx
+# Django en producción a través de gunicorn y nginx
 
 ## Antecedentes
-* La presente guía está basada en el tutorial de la plataforma **DigitalOcean** [[enlace - web]](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-20-04) 
+* La presente guía está basada en el tutorial del servicio **DigitalOcean** [[enlace - web]](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-20-04) 
 
 ## Softaware y tecnologías
 * Se necesita un computador con las siguientes características:
-	* Sistema operativo GNU/Linux UBUNTU 18.04 o 20.04
+	* Sistema operativo GNU/Linux **UBUNTU** 18.04 o 20.04
 	* Lenguaje de programación Python (3.7, 3.8, 3.9)
 	* Librerías de pyhton: django, corsheaders, rest_framework, gunicorn; (se pueden instalar a través de pip install). 
 	* Servidor Web - nginx
@@ -14,14 +14,14 @@
 
 ### Parte 1
 
-Se asume que se tiene un proyecto de django funcional a través del servidor propio de la framework (python manage.py runserver)
+Se asume que se tiene un proyecto de django funcional. Se puede comprobar el funcionamiento a través del servidor propio del framework (python manage.py runserver)
 
 1. Instalar la librería gunicorn (pip install gunicorn)
-2. Agregar la variable **ALLOWED_HOSTS**  con algunas direcciones; en el archivo **settings.py** del proyecto de django; que permitan acceder desde gunicorn y luego desde el servidor web.
+2. Agregar la variable **ALLOWED_HOSTS**  con algunas direcciones en el archivo **settings.py** del proyecto de django; que permitan acceder desde gunicorn y luego desde el servidor web.
 ```
 ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"] 	 
 ```
-3. En el archivo **urls.py** del proyecto de django agregar lo siguiente
+3. En el archivo **urls.py** del proyecto de django agregar lo siguiente (para el manejo de los archivo de la carpeta de static:
 ```
 # importar
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -35,24 +35,24 @@ urlpatterns += staticfiles_urlpatterns()
 python manage.py collectstatic
 ```
 
-5. Levantar o iniciar el proyecto con gunicorn, desde la carpeta raíz del mismo, a través del siguiente comando:
+5. Levantar o iniciar el proyecto con **gunicorn**, desde la carpeta raíz del mismo. A través del siguiente comando:
 
 ```
 gunicorn --bind 0.0.0.0:8000 proyectoUno.wsgi
 ```
-Donde, **proyectoUno** es el nombre del proyecto. En el navegador, se debe observar el proyecto funcionando. Consejo, si no es posible visualizar el proyecto, debe revisar los errores; cuando se superen los mismos, pasar a la siguiente parte.
+Donde, **proyectoUno** es el nombre del proyecto. En el navegador, se debe observar el proyecto funcionando. ***Consejo***, si no es posible visualizar el proyecto, debe revisar los errores; cuando se superen los mismos, pasar a la siguiente parte.
 
-5. Terminar la ejecución a través de **control+c**
+5. Terminar la ejecución del servicio de gunicorn a través de **control+c**
 
 ### Parte 2
 
-Es momento de iniciar el proceso de enlazar el servidor nginx a través de gunicorn con el proyecto de django.
+Es momento de iniciar el proceso de enlazar el servidor nginx mediante gunicorn con el proyecto de django.
 
 1) Agregar un servicio en el sistema operativo; mismo que será encargado de levantar el proyecto de django mediante gunicorn. Luego el servicio será usado por nginx.
 
 2) En el directorio **/etc/systemd/system/** agregar un archivo con la siguiente extensión y estructura. Se debe usar **sudo** para acceder y crear el archivo.
 
-2.1. Nombre del archivo **proyecto01.service** Donde proyecto01 es un nombre cualquiera.
+2.1. Nombre del archivo **proyecto01.service** . Donde proyecto01 es un nombre cualquiera.
 2.2. En el archivo agregar la siguiente información
 ```
 
@@ -62,34 +62,35 @@ Description=gunicorn daemon
 After=network.target
 
 [Service]
-# usuario del sistema operativo que ejecutará el procesos
+# usuario del sistema operativo que ejecutará el proceso
 User=usuario-sistema-operativo
 # el grupo del sistema operativo que permite la comunicación a desde el servidor web-nginx con gunicorn. No se debe cambiar el valor
 Group=www-data
 
-# a través de la variable WorkingDirectory se indicar la dirección absoluta del proyecto de Django
+# a través de la variable WorkingDirectory se indica la dirección absoluta del proyecto de Django
 WorkingDirectory=/home/usuario-sistema/carpeta/proyectos/nombre-proyecto
-# se indicar el path de python
-# Ejemplo 1 /usr/bin/python3.9
-# Ejemplo 2 (con el uso de entornos virtuales) /home/usuario/entornos/entorno01/bin
+
+# En Environment se indica el path de python
+# Ejemplo 1: /usr/bin/python3.9
+# Ejemplo 2: (Opcional, con el uso de entornos virtuales) /home/usuario/entornos/entorno01/bin
 Environment="PATH=agregar-path-python"
 
 # Detallar el comando para iniciar el servicio
 ExecStart=path-python/bin/gunicorn --workers 3 --bind unix:application.sock -m 007 proyectoDjango.wsgi:application
 
 # Donde: aplicacion.sock es el nombre del archivo que se debe crear en el directorio del proyecto; proyectoDjango el nombre del proyecto que se intenta vincular con nginx.
-
+# La expresión /bin/gunicorn no se debe modificar.
 
 [Install]
 # esta sección será usada para indicar que el servicio puede empezar cuando se inicie el sistema operativo. Se sugiere no cambiar el valor dado.
 WantedBy=multi-user.target
 ```
-3) Iniciar y habilitar el proceso a través de los siguiente comando:
+3) Iniciar y habilitar el proceso a través de los siguiente comandos:
 ```
 sudo systemctl start proyecto01
 sudo systemctl enable proyecto01
 ```
-Donde **proyecto01**, es el nombre que se le asigno al archivo creado con extensión **service**
+Donde **proyecto01**, es el nombre que se le asignó al archivo creado con extensión **service**
 
 Verificar que todo esté en orden con el servicio, usar el comando:
 ```
@@ -103,7 +104,7 @@ Ejemplo:
 5) Si todo marcha bien, se puede pasar a la siguiente parte.
 
 ### Parte 3
-* Configuración del servidor nginx. Se asume que tiene instalado nginx en el sistema operativo.
+* Configuración del servidor web **nginx**. Se asume que se tiene instalado nginx en el sistema operativo.
 * Los comandos para iniciar, reiniciar, parar y verificar el servicio son:
 	* sudo service nginx start
 	* sudo service nginx stop
@@ -137,14 +138,14 @@ server {
 }
 
 ```
-3) Crear un enlace simbólico del archivo creado en el directorio sites-available.
+3) Iniciar un enlace simbólico del archivo creado en el directorio sites-available.
 
 ```
 sudo ln -s /etc/nginx/sites-available/proyecto01 /etc/nginx/sites-enabled
 ```
 4) Iniciar o reiniciar el servicio de nginx.
 
-5) Si todo marcha bien, en un navegador con las siguiente direcciones se debe deplegar el proyecto a través de nginx:
+5) Si todo marcha bien, en un navegador con las siguientes direcciones se debe deplegar el proyecto a través de nginx:
 
 * http://localhost:81
 * http://0.0.0.0:81
@@ -183,13 +184,13 @@ server {
 
 }
 ```
-3) Crear un enlace simbólico del archivo creado en el directorio sites-available.
+3) Iniciar un enlace simbólico del archivo creado en el directorio sites-available.
 
 ```
 sudo ln -s /etc/nginx/sites-available/proyecto01 /etc/nginx/sites-enabled
 ```
 
-4) En el archivo settings.py del proyecto realizar la siguiente modificaciones.
+4) En el archivo settings.py del proyecto realizar las siguientes modificaciones:
 ```
 # modificar esta variable solo en producción, donde proyecto1, es el subdirectorio usado en el archivo de nginx
 STATIC_URL = '/proyecto1/static/'
