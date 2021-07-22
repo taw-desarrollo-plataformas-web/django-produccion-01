@@ -132,7 +132,7 @@ server {
 
     
     location /static/ {
-        root /ruta/a/la/carpeta/staticos/del/proyecto-django/static/;
+        root /ruta/a/la/carpeta/staticos/del/proyecto-django;
     }
 
 }
