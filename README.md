@@ -21,6 +21,11 @@ Se asume que se tiene un proyecto de django funcional. Se puede comprobar el fun
 ```
 ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"] 	 
 ```
+2.1 Agregar en el **settings.py** la variable:
+```
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+```
+
 3. En el archivo **urls.py** del proyecto de django agregar lo siguiente (para el manejo de los archivo de la carpeta de static:
 ```
 # importar
