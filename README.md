@@ -7,7 +7,7 @@
 * Se necesita un computador con las siguientes características:
 	* Sistema operativo GNU/Linux **UBUNTU** 18.04 o 20.04
 	* Lenguaje de programación Python (3.7, 3.8, 3.9)
-	* Librerías de pyhton: django, corsheaders, rest_framework, gunicorn; (se pueden instalar a través de pip install). 
+	* Librerías de Python: django, corsheaders, rest_framework, gunicorn; (se pueden instalar a través de pip install). 
 	* Servidor Web - nginx
 	
 ## Proceso 
